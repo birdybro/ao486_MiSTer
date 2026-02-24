@@ -362,6 +362,7 @@ end
 // The counter can be decremented on the falling edge of clock
 wire enable = clock_fall
     && ~load                                      // the counter is not decremented on (re)load
+    && (mode[1:0] == 2'b01 || loaded)             // in modes 0, 2, 3, 4 counting is disabled until the initial count is loaded
     && (mode[1:0] == 2'b01 || gate_level_sampled) // in modes 0, 2, 3, 4 the sampled gate level can disable counting
     && ~(mode == 3'd0 && write_seq_msb);          // for mode 0 in read/wite mode 3 (LSB/MSB), writing the first byte disables counting
 
