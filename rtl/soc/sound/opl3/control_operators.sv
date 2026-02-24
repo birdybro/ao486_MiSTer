@@ -277,7 +277,7 @@ module control_operators
             end
             else begin
                 kon_block_fnum_channel_mem_rd_address = connection_sel[5] ? 2 : 5;
-                fb_cnt0_channel_mem_rd_address = connection_sel[2] ? 2 : 5;
+                fb_cnt0_channel_mem_rd_address = connection_sel[5] ? 2 : 5;
             end
         end
         12, 15: begin
