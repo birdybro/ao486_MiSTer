@@ -329,10 +329,13 @@ wire load_terminal = clock_fall
 wire load = load_written || load_trigger || load_terminal;
 
 // Flag indicating if the initial count has been loaded into the counter
+// load_set is assigned in the ifdef block below: it includes the immediate load
+// path when enabled, so that `loaded` is synchronized with the actual counter load
+wire load_set;
 reg loaded;
 always @(posedge clk) begin
     if(!rst_n || set_control_mode) loaded <= 1'b0;
-    else if(load)                  loaded <= 1'b1;
+    else if(load_set)              loaded <= 1'b1;
 end
 
 /*
@@ -359,7 +362,7 @@ end
 // The counter can be decremented on the falling edge of clock
 wire enable = clock_fall
     && ~load                                      // the counter is not decremented on (re)load
-    && (mode[1:0] == 2'b01 || loaded)             // in modes 0, 2, 3, 4 counting is disabled until the initial count is loaded (disabling this line will fix Lemmings 2 (with Adlib music) on the highest speed settings)
+    && (mode[1:0] == 2'b01 || loaded)             // in modes 0, 2, 3, 4 counting is disabled until the initial count is loaded
     && (mode[1:0] == 2'b01 || gate_level_sampled) // in modes 0, 2, 3, 4 the sampled gate level can disable counting
     && ~(mode == 3'd0 && write_seq_msb);          // for mode 0 in read/wite mode 3 (LSB/MSB), writing the first byte disables counting
 
@@ -369,6 +372,7 @@ wire enable = clock_fall
 // the counter. The counter will always be (re)loaded on the next clock pulse. This can cause
 // issues with certain timing critial code on fast enough systems.
 
+assign load_set      = load;
 wire load_counter    = load;
 wire enable_counting = enable;
 
@@ -412,6 +416,7 @@ wire enable_imm = enable && (
     mode[1:0] == 2'b00 || ~( (trigger || trigger_sampled) && trigger_allowed )
 );
 
+assign load_set      = load || load_imm;
 wire load_counter    = load_imm;
 wire enable_counting = enable_imm;
 
