@@ -794,7 +794,7 @@ wire [7:0] host_io_read_wire =
 wire host_memory_out_of_bounds =
 	(graph_system_memory == 2'd1 && mem_address > 17'h0FFFF) ||
 	(graph_system_memory == 2'd2 && (mem_address < 17'h10000 || mem_address > 17'h17FFF)) ||
-	(graph_system_memory == 2'd3 && mem_address < 17'h17FFF);
+	(graph_system_memory == 2'd3 && mem_address < 17'h18000);
 
 wire [16:0] host_address_reduced =
 	(graph_system_memory == 2'd1)?  { 1'b0, mem_address[15:0] } :
